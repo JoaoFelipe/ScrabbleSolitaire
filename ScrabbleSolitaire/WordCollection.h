@@ -11,7 +11,7 @@
 
 class WordCollection {
 private:
-        set<LetterTileCollection> s_;
+        vector<LetterTileCollection> s_;
         WordCollection(const WordCollection &);
         WordCollection & operator=(const WordCollection &);
 

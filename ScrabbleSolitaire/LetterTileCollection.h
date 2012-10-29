@@ -37,7 +37,7 @@ public:
 	LetterTileCollection& operator=(LetterTileCollection const & other);
 
 	// This method returns the number of elements in the container
-	int size() const;
+	unsigned int size() const;
 
 	// This method takes a file name, opens up the file, reads in strings and inserts them into _container 
 	// The file structure should be the following:
@@ -91,6 +91,10 @@ public:
 
 	// This method takes a LetterTileCollection and push back the LetterTile in the position into the _container (Lab4)
 	void insert(const LetterTileCollection & lt, int position);
+
+	// This method removes the LetterTiles from this LetterTileCollection if they are present in a given string (Lab4)
+	// Returns 0 if sucessful
+	int remove(string & word);
 
 private:
 	// Private container of strings

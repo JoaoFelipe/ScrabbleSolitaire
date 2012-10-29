@@ -18,9 +18,7 @@ LetterTileCollection::LetterTileCollection ()
 	: _container() { }
 
 // Copy constructor in LetterTileCollection that copies the sequence of LetterTiles
-LetterTileCollection::LetterTileCollection (const LetterTileCollection & other) { 
-	_container = vector<LetterTile>(other._container.begin(), other._container.end());
-}
+LetterTileCollection::LetterTileCollection (const LetterTileCollection & other) : _container(vector<LetterTile>(other._container.begin(), other._container.end())){}
 
 // Constructor that takes a file name and reads it into container
 LetterTileCollection::LetterTileCollection (const string & filename) 
@@ -38,7 +36,7 @@ LetterTileCollection::LetterTileCollection (const LetterTileCollection & other, 
 		char ch = word[i];
 		found = false;
 		// Scan for a not used letter in the other container. If it is found, adds to container
-		for (int j = 0; j < other.size(); ++j) {
+		for (unsigned int j = 0; j < other.size(); ++j) {
 			if (!used[j] && other._container[j].letter == ch) {
 				_container.push_back(other._container[j]);
 				used[j] = true;
@@ -63,7 +61,7 @@ LetterTileCollection& LetterTileCollection::operator= (LetterTileCollection cons
 }
 
 // Returns the number of elements in container
-int LetterTileCollection::size() const {
+unsigned int LetterTileCollection::size() const {
 	return _container.size();
 }
 
@@ -92,7 +90,6 @@ int LetterTileCollection::add(const string & filename) {
 		}
 		ifs.close();
 	} else {
-		//cout << "The tile definition file '" << tile_path << "' coudn't be opened" << endl;
 		return INPUT_FILE_ERROR;
 	}
 	return 0;
@@ -100,10 +97,14 @@ int LetterTileCollection::add(const string & filename) {
 
 // Moves the last n tiles from other LetterTileCollection to this LetterTileCollection
 void LetterTileCollection::move(LetterTileCollection & other, unsigned int n) {
-	for (vector<LetterTile>::const_iterator i = other._container.end() - n; i < other._container.end(); ++i) {
+	unsigned int amount = n;
+	if (n > other.size()) {
+		amount = other.size();
+	}
+	for (vector<LetterTile>::const_iterator i = other._container.end() - amount; i < other._container.end(); ++i) {
 		_container.push_back(*i);
 	}
-	other._container.erase(other._container.end() - n, other._container.end());
+	other._container.erase(other._container.end() - amount, other._container.end());
 }
 
 // Prints all _container contents to stream
@@ -180,4 +181,36 @@ void LetterTileCollection::insert(LetterTile & lt) {
 // This method takes a LetterTileCollection and push back the LetterTile in the position into the _container (Lab4)
 void LetterTileCollection::insert(const LetterTileCollection & ltc, int position) {
 	_container.push_back(ltc._container[position]);
+}
+
+// This method removes the LetterTiles from this LetterTileCollection if they are present in a given string (Lab4)
+// Returns 0 if sucessful
+int LetterTileCollection::remove(string & word) {
+	vector<bool> used(_container.size(), false); // this vector indicates which letters were already used
+	bool found = true;
+	for (unsigned int i = 0; i < word.length() && found; ++i) {
+		char ch = word[i];
+		found = false;
+		// Scan for a not used letter in the other container. If it is found, adds to container
+		for (unsigned int j = 0; j < size() && !found; ++j) {
+			if (!used[j] && _container[j].letter == ch) {
+				used[j] = true;
+				found = true;
+		
+			}
+		}
+	}
+	if (!found) {
+		return INVALID_WORD_ERROR;
+	} else {
+		vector<LetterTile> new_container;
+		for (unsigned int j = 0; j < used.size(); ++j) {
+			if (!used[j]) {
+				new_container.push_back(_container[j]);
+			}
+		}
+		_container = new_container;
+		return SUCCESS;
+	}
+
 }
